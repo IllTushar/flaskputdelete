@@ -1,5 +1,7 @@
 import mysql.connector
 from flask import make_response
+from datetime import datetime,timedelta
+import jwt
 class model_class():
     def __init__(self):
         try:
@@ -67,3 +69,15 @@ class model_class():
         else:
             return make_response({"message":"no data found"},202)
 
+    def login_method(self,data):
+        self.cur.execute(f"SELECT id,name,email,avatar, role_info FROM user_info where email='{data['email']}' and password = '{data['password']}'")
+        result = self.cur.fetchall()
+        user_data= result[0]
+        exp_time1 = datetime.now() +timedelta(minutes=15)
+        exp_epoch_time = int(exp_time1.timestamp())
+        payload = {
+            "payload":user_data,
+            "exp":exp_epoch_time
+        }
+        token = jwt.encode(payload,"tushar",algorithm="HS256")
+        return make_response({"token":token},200)
