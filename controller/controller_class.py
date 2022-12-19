@@ -11,13 +11,18 @@ def update_controller():
 @app.route("/user/delete/<id>",methods=["DELETE"])
 def delete_controller(id):
     return obj.delete_mode_method(id)
+    
 @app.route("/user/getall")
-@auth.auth_token("/user/getall")
+@auth.auth_token()
 def get_all_details():
     return obj.get_all_data()
 @app.route("/user/post",methods=["POST"])
 def get_post_data():
     return obj.post_details(request.form)
+
+@app.route("/user/addmultiple",methods=["POST"])
+def add_multiple_data():
+    return obj.post_multiple_row(request.json)
 @app.route("/user/patch",methods=["PATCH"])
 def patch_data():
     return obj.patch_the_data(request.form)

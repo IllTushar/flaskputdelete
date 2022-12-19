@@ -1,13 +1,14 @@
 import mysql.connector
 from flask import make_response
 from datetime import datetime,timedelta
+from config.config import dbconfig
 import jwt
 class model_class():
     def __init__(self):
         try:
-          self.con  = mysql.connector.connect(host="localhost",user="root",password="",database="api_database")
-          self.con.autocommit=True
-          self.cur = self.con.cursor(dictionary=True)
+         self.con = mysql.connector.connect(host=dbconfig['hostname'],user=dbconfig['username'],password=dbconfig['password'],database=dbconfig['database'])
+         self.con.autocommit=True
+         self.cur = self.con.cursor(dictionary=True)
         except:
             print("Something went wrong ")
 
@@ -81,3 +82,14 @@ class model_class():
         }
         token = jwt.encode(payload,"tushar",algorithm="HS256")
         return make_response({"token":token},200)
+    
+    def post_multiple_row(self,data):
+        qry = "INSERT INTO user_info(id,name,email,password,role_info) VALUES"
+        for userdata in data:
+            qry +=f"({userdata['id']},'{userdata['name']}', '{userdata['email']}', '{userdata['password']}', {userdata['role_info']}),"
+        finalqry = qry.rsplit(",")
+        self.cur.execute(finalqry)
+        return make_response({"message":"Created multiple row successful"},200 )
+
+
+    
